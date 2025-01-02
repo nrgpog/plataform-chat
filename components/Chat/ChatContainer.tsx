@@ -13,7 +13,7 @@ const ChatLayout = styled.div`
   display: grid;
   grid-template-columns: 280px 1fr;
   height: 100vh;
-  background: #ffffff;
+  background: #1a1a1a;
   position: fixed;
   top: 0;
   left: 0;
@@ -28,8 +28,8 @@ const ChatLayout = styled.div`
 `
 
 const Sidebar = styled.div`
-  background: #1e1e1e;
-  color: #ffffff;
+  background: #242424;
+  color: #e0e0e0;
   padding: 1.5rem;
   overflow-y: auto;
   border-right: 1px solid #2d2d2d;
@@ -54,7 +54,7 @@ const Sidebar = styled.div`
 const ChatArea = styled.div`
   display: flex;
   flex-direction: column;
-  background: #ffffff;
+  background: #1a1a1a;
   height: 100vh;
   position: relative;
   overflow: hidden;
@@ -74,7 +74,7 @@ const MessageList = styled.div`
   flex: 1;
   padding: 1.5rem;
   overflow-y: auto;
-  background: #f8f9fa;
+  background: #1a1a1a;
   -webkit-overflow-scrolling: touch;
   
   @media (max-width: 768px) {
@@ -101,10 +101,10 @@ const MessageList = styled.div`
     
     &[style*="text-align: right"] {
       margin-left: auto;
-      background: #00b894;
-      color: #ffffff;
+      background: #4a4a4a;
+      color: #e0e0e0;
       border-bottom-right-radius: 0.3rem;
-      box-shadow: 0 2px 4px rgba(0, 184, 148, 0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       
       strong {
         display: none;
@@ -113,16 +113,16 @@ const MessageList = styled.div`
 
     &[style*="text-align: left"] {
       margin-right: auto;
-      background: #e9ecef;
-      color: #2d3436;
+      background: #2d2d2d;
+      color: #e0e0e0;
       border-bottom-left-radius: 0.3rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 
       strong {
         display: block;
         font-size: 0.8rem;
         margin-bottom: 0.3rem;
-        color: #636e72;
+        color: #888888;
       }
     }
   }
@@ -130,8 +130,8 @@ const MessageList = styled.div`
 
 const MessageInput = styled.div`
   padding: 1.2rem;
-  background: #ffffff;
-  border-top: 1px solid #e9ecef;
+  background: #242424;
+  border-top: 1px solid #2d2d2d;
   display: flex;
   gap: 0.5rem;
   align-items: center;
@@ -142,29 +142,30 @@ const MessageInput = styled.div`
     bottom: 0;
     left: 0;
     right: 0;
-    background: #ffffff;
+    background: #242424;
     z-index: 10;
     min-height: 70px;
-    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.2);
   }
   
   input {
     flex: 1;
     padding: 0.7rem 1rem;
     border: none;
-    background: #f0f2f5;
+    background: #333333;
     border-radius: 20px;
     font-size: 0.95rem;
     transition: all 0.2s ease;
-    color: #2d3436;
+    color: #e0e0e0;
     
     &:focus {
       outline: none;
-      background: #e8eaed;
+      background: #3d3d3d;
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
     }
     
     &::placeholder {
-      color: #95a5a6;
+      color: #888888;
     }
     
     @media (max-width: 768px) {
@@ -174,8 +175,8 @@ const MessageInput = styled.div`
   
   button {
     padding: 0.7rem;
-    background: #6c5ce7;
-    color: #ffffff;
+    background: #4a4a4a;
+    color: #e0e0e0;
     border: none;
     border-radius: 50%;
     width: 40px;
@@ -188,6 +189,7 @@ const MessageInput = styled.div`
     
     &:hover {
       transform: scale(1.05);
+      background: #555555;
     }
 
     &:active {
@@ -205,8 +207,8 @@ const MenuButton = styled.button`
   width: 40px;
   height: 40px;
   padding: 0;
-  background: #6c5ce7;
-  color: white;
+  background: #4a4a4a;
+  color: #e0e0e0;
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -218,6 +220,7 @@ const MenuButton = styled.button`
 
   &:hover {
     transform: scale(1.05);
+    background: #555555;
   }
 
   &:active {
@@ -234,17 +237,17 @@ const UserNameModal = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #ffffff;
+  background: #242424;
   padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   z-index: 1000;
   width: 90%;
   max-width: 400px;
 
   h3 {
     margin: 0 0 1.5rem 0;
-    color: #1e1e1e;
+    color: #e0e0e0;
     font-size: 1.5rem;
     text-align: center;
     font-weight: 600;
@@ -253,7 +256,7 @@ const UserNameModal = styled.div`
 
 const Button = styled.button`
   padding: 0.7rem 1.2rem;
-  background: #6c5ce7;
+  background: #4a4a4a;
   color: #ffffff;
   border: none;
   border-radius: 20px;
@@ -268,6 +271,7 @@ const Button = styled.button`
   
   &:hover {
     transform: scale(1.02);
+    background: #555555;
   }
 
   &:active {
@@ -278,21 +282,22 @@ const Button = styled.button`
 const Input = styled.input`
   padding: 0.7rem 1rem;
   border: none;
-  background: #f0f2f5;
+  background: #333333;
   border-radius: 20px;
   width: 100%;
   font-size: 0.95rem;
   transition: all 0.2s ease;
   margin-bottom: 1rem;
-  color: #2d3436;
+  color: #ffffff;
 
   &:focus {
     outline: none;
-    background: #e8eaed;
+    background: #3d3d3d;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
   }
 
   &::placeholder {
-    color: #95a5a6;
+    color: #aaaaaa;
   }
 `
 
@@ -308,19 +313,19 @@ const UserNameDisplay = styled.div`
   span {
     font-weight: 500;
     flex: 1;
-    color: #ffffff;
+    color: #e0e0e0;
   }
 
   button {
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
     border-radius: 20px;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
     }
   }
 `
@@ -332,11 +337,11 @@ const GroupItem = styled.div<{ isSelected: boolean }>`
   margin-bottom: 0.5rem;
   transition: all 0.2s ease;
   background: ${props => props.isSelected ? '#2d2d2d' : 'transparent'};
-  border: 1px solid ${props => props.isSelected ? '#ffffff20' : 'transparent'};
-  color: #ffffff;
+  border: 1px solid ${props => props.isSelected ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
+  color: #e0e0e0;
   
   &:hover {
-    background: ${props => !props.isSelected && '#ffffff10'};
+    background: ${props => !props.isSelected && 'rgba(255, 255, 255, 0.05)'};
   }
 `
 
@@ -344,8 +349,8 @@ const CreateGroupButton = styled.button`
   width: 32px;
   height: 32px;
   padding: 0;
-  background: #6c5ce7;
-  color: white;
+  background: #4a4a4a;
+  color: #e0e0e0;
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -358,6 +363,7 @@ const CreateGroupButton = styled.button`
 
   &:hover {
     transform: scale(1.1);
+    background: #555555;
   }
 
   &:active {
@@ -376,14 +382,14 @@ const GroupHeader = styled.div`
   h2 {
     font-size: 1.2rem;
     font-weight: 600;
-    color: #ffffff;
+    color: #e0e0e0;
     margin: 0;
   }
 `
 
 const CreateGroupModal = styled(UserNameModal)`
   h3 {
-    color: #1e1e1e;
+    color: #e0e0e0;
   }
 
   .buttons {
@@ -405,11 +411,11 @@ const CreateGroupModal = styled(UserNameModal)`
 
 const CancelButton = styled(Button)`
   background: transparent;
-  color: #2d3436;
-  border: 1px solid #dfe6e9;
+  color: #e0e0e0;
+  border: 1px solid #2d2d2d;
 
   &:hover {
-    background: #f0f2f5;
+    background: rgba(255, 255, 255, 0.05);
     transform: scale(1.02);
   }
 `

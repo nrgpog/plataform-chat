@@ -91,7 +91,7 @@ const Message = styled.div<{ isSwipedLeft?: boolean; isSwipedRight?: boolean }>`
   }
 `
 
-const MessageList = styled.div`
+const MessageList = styled.div<{ $hasReply?: boolean }>`
   flex: 1;
   padding: 1.5rem;
   overflow-y: auto;
@@ -102,13 +102,14 @@ const MessageList = styled.div`
   
   @media (max-width: 768px) {
     padding: 1rem;
-    padding-bottom: calc(70px + 1rem);
+    padding-bottom: calc(70px + ${props => props.$hasReply ? '40px' : '0px'});
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    height: calc(100dvh - 70px);
+    height: 100%;
+    z-index: 1;
   }
 
   /* Estilo para los mensajes */
@@ -158,6 +159,7 @@ const MessageInput = styled.div`
   display: flex;
   gap: 0.5rem;
   align-items: center;
+  position: relative;
   
   @media (max-width: 768px) {
     padding: 0.8rem;
@@ -171,6 +173,29 @@ const MessageInput = styled.div`
     box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.2);
   }
   
+  .reply-preview {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #2d2d2d;
+    font-size: 0.9rem;
+    color: #888;
+    z-index: 11;
+
+    @media (max-width: 768px) {
+      position: fixed;
+      bottom: 70px;
+      top: auto;
+      box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+    }
+  }
+
   input {
     flex: 1;
     padding: 0.7rem 1rem;
@@ -884,7 +909,7 @@ export default function ChatContainer() {
           </Sidebar>
           
           <ChatArea>
-            <MessageList>
+            <MessageList $hasReply={!!replyingTo}>
               {messages.map(message => (
                 <MessageItem
                   key={message.id}
@@ -901,20 +926,7 @@ export default function ChatContainer() {
             
             <MessageInput>
               {replyingTo && (
-                <div style={{
-                  position: 'absolute',
-                  top: '-40px',
-                  left: 0,
-                  right: 0,
-                  background: '#1a1a1a',
-                  padding: '8px 16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  borderTop: '1px solid #2d2d2d',
-                  fontSize: '0.9rem',
-                  color: '#888'
-                }}>
+                <div className="reply-preview">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <ReplyIcon />
                     <span style={{

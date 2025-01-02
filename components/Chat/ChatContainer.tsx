@@ -11,30 +11,34 @@ interface SidebarProps {
 
 const ChatLayout = styled.div`
   display: grid;
-  grid-template-columns: 250px 1fr;
+  grid-template-columns: 280px 1fr;
   height: 100vh;
-  background-color: #f5f5f5;
+  background: #ffffff;
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     position: relative;
+    height: 100vh;
+    overflow: hidden;
   }
 `
 
 const Sidebar = styled.div`
-  background-color: #2c3e50;
-  color: white;
-  padding: 1rem;
+  background: #1e1e1e;
+  color: #ffffff;
+  padding: 1.5rem;
   overflow-y: auto;
+  border-right: 1px solid #2d2d2d;
+  height: 100vh;
 
   @media (max-width: 768px) {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 80%;
+    width: 85%;
     height: 100%;
-    z-index: 10;
-    transition: transform 0.3s ease-in-out;
+    z-index: 20;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateX(-100%);
     
     &.open {
@@ -46,66 +50,134 @@ const Sidebar = styled.div`
 const ChatArea = styled.div`
   display: flex;
   flex-direction: column;
-  background-color: white;
+  background: #ffffff;
   height: 100vh;
+  position: relative;
 
   @media (max-width: 768px) {
     width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
   }
 `
 
 const MessageList = styled.div`
   flex: 1;
-  padding: 1rem;
+  padding: 1.5rem;
   overflow-y: auto;
+  background: #f8f9fa;
   
   @media (max-width: 768px) {
-    padding: 0.5rem;
-    height: calc(100vh - 80px);
+    padding: 1rem;
+    height: calc(100vh - 70px);
+    padding-bottom: 80px;
+  }
+
+  /* Estilo para los mensajes */
+  > div {
+    padding: 0.8rem 1.2rem;
+    border-radius: 1rem;
+    margin-bottom: 1rem;
+    max-width: 85%;
+    position: relative;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    word-break: break-word;
+    
+    &[style*="text-align: right"] {
+      margin-left: auto;
+      background: #00b894;
+      color: white;
+      border-bottom-right-radius: 0.3rem;
+      box-shadow: 0 2px 4px rgba(0, 184, 148, 0.1);
+      
+      strong {
+        display: none;
+      }
+    }
+
+    &[style*="text-align: left"] {
+      margin-right: auto;
+      background: #e9ecef;
+      color: #1e1e1e;
+      border-bottom-left-radius: 0.3rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+      strong {
+        display: block;
+        font-size: 0.8rem;
+        margin-bottom: 0.3rem;
+        color: #6c757d;
+      }
+    }
   }
 `
 
 const MessageInput = styled.div`
-  padding: 1rem;
-  border-top: 1px solid #eee;
+  padding: 1.2rem;
+  background: #ffffff;
+  border-top: 1px solid #e9ecef;
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
+  align-items: center;
   
   @media (max-width: 768px) {
-    padding: 0.5rem;
+    padding: 0.8rem;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background: white;
+    background: #ffffff;
+    z-index: 10;
   }
   
   input {
     flex: 1;
-    padding: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 0.7rem 1rem;
+    border: none;
+    background: #f0f2f5;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    
+    &:focus {
+      outline: none;
+      background: #e8eaed;
+    }
+    
+    &::placeholder {
+      color: #65676b;
+    }
     
     @media (max-width: 768px) {
-      font-size: 16px; /* Previene zoom en iOS */
+      font-size: 16px;
     }
   }
   
   button {
-    padding: 0.5rem 1rem;
-    background-color: #3498db;
+    padding: 0.7rem;
+    background: #6c5ce7;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
     cursor: pointer;
-    
-    @media (max-width: 768px) {
-      padding: 0.5rem;
-      min-width: 60px;
-    }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
     
     &:hover {
-      background-color: #2980b9;
+      transform: scale(1.05);
+    }
+
+    &:active {
+      transform: scale(0.95);
     }
   }
 `
@@ -115,41 +187,265 @@ const MenuButton = styled.button`
   position: fixed;
   top: 1rem;
   right: 1rem;
-  z-index: 20;
-  padding: 0.5rem;
-  background-color: #3498db;
+  z-index: 30;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  background: #6c5ce7;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 50%;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 
   @media (max-width: 768px) {
-    display: block;
+    display: flex;
+  }
+`
+
+const UserNameModal = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  z-index: 1000;
+  width: 90%;
+  max-width: 400px;
+
+  h3 {
+    margin: 0 0 1.5rem 0;
+    color: #1e1e1e;
+    font-size: 1.5rem;
+    text-align: center;
+    font-weight: 600;
+  }
+`
+
+const Button = styled.button`
+  padding: 0.7rem 1.2rem;
+  background: #6c5ce7;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  
+  &:hover {
+    transform: scale(1.02);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+`
+
+const Input = styled.input`
+  padding: 0.7rem 1rem;
+  border: none;
+  background: #f0f2f5;
+  border-radius: 20px;
+  width: 100%;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+
+  &:focus {
+    outline: none;
+    background: #e8eaed;
+  }
+
+  &::placeholder {
+    color: #65676b;
+  }
+`
+
+const UserNameDisplay = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1rem;
+  background: #2d2d2d;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+
+  span {
+    font-weight: 500;
+    flex: 1;
+    color: #ffffff;
+  }
+
+  button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    border-radius: 20px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+`
+
+const GroupItem = styled.div<{ isSelected: boolean }>`
+  cursor: pointer;
+  padding: 0.8rem 1rem;
+  border-radius: 0.8rem;
+  margin-bottom: 0.5rem;
+  transition: all 0.2s ease;
+  background: ${props => props.isSelected ? '#2d2d2d' : 'transparent'};
+  border: 1px solid ${props => props.isSelected ? '#ffffff20' : 'transparent'};
+  
+  &:hover {
+    background: ${props => !props.isSelected && '#ffffff10'};
+  }
+`
+
+const CreateGroupButton = styled.button`
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: #6c5ce7;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  line-height: 1;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+`
+
+const GroupHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #2d2d2d;
+
+  h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+  }
+`
+
+const CreateGroupModal = styled(UserNameModal)`
+  h3 {
+    color: #1e1e1e;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+
+    button {
+      flex: 1;
+      width: auto;
+    }
+  }
+
+  @media (max-width: 768px) {
+    width: 95%;
+    padding: 1.5rem;
+  }
+`
+
+const CancelButton = styled(Button)`
+  background: transparent;
+  color: #65676b;
+  border: 1px solid #dadde1;
+
+  &:hover {
+    background: #f0f2f5;
+    transform: scale(1.02);
   }
 `
 
 export default function ChatContainer() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [newMessage, setNewMessage] = useState('')
   const [groups, setGroups] = useState<ChatGroup[]>([])
-  const [currentMessage, setCurrentMessage] = useState('')
-  const [currentGroup, setCurrentGroup] = useState<string | null>(null)
-  const [username, setUsername] = useState('')
-  const [tempUsername, setTempUsername] = useState('')
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null)
+  const [userName, setUserName] = useState('')
+  const [showUserNameModal, setShowUserNameModal] = useState(false)
+  const [showCreateGroupModal, setShowCreateGroupModal] = useState(false)
+  const [newGroupName, setNewGroupName] = useState('')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  const loadGroups = async () => {
+    const { data, error } = await supabase
+      .from('groups')
+      .select('*')
+      .order('created_at', { ascending: true })
+    
+    if (error) return
+    if (data) setGroups(data)
+  }
+
+  useEffect(() => {
+    // Cargar el nombre de usuario del localStorage al iniciar
+    const savedUserName = localStorage.getItem('chatUserName')
+    if (savedUserName) {
+      setUserName(savedUserName)
+    } else {
+      setShowUserNameModal(true)
+    }
+    loadGroups()
+    setIsLoading(false)
+  }, [])
+
+  const handleUserNameSubmit = (newName: string) => {
+    if (newName.trim()) {
+      setUserName(newName.trim())
+      localStorage.setItem('chatUserName', newName.trim())
+      setShowUserNameModal(false)
+    }
+  }
+
+  const handleChangeUserName = () => {
+    setShowUserNameModal(true)
+  }
 
   // Efecto para cargar grupos
   useEffect(() => {
-    // Cargar grupos existentes
-    const loadGroups = async () => {
-      const { data, error } = await supabase
-        .from('groups')
-        .select('*')
-        .order('created_at', { ascending: true })
-      
-      if (error) return
-      if (data) setGroups(data)
-    }
-
     // Configurar canal de grupos
     const groupsChannel = supabase.channel('public:groups')
 
@@ -179,7 +475,7 @@ export default function ChatContainer() {
 
   // Efecto para cargar mensajes cuando cambia el grupo
   useEffect(() => {
-    if (!currentGroup) {
+    if (!selectedGroup) {
       setMessages([])
       return
     }
@@ -189,7 +485,7 @@ export default function ChatContainer() {
       const { data, error } = await supabase
         .from('messages')
         .select('*')
-        .eq('group_id', currentGroup)
+        .eq('group_id', selectedGroup)
         .order('created_at', { ascending: true })
       
       if (error) return
@@ -202,13 +498,13 @@ export default function ChatContainer() {
 
     // Suscribirse a cambios en los mensajes del grupo actual
     const channel = supabase
-      .channel(`messages:${currentGroup}`)
+      .channel(`messages:${selectedGroup}`)
       .on('postgres_changes', 
         {
           event: 'INSERT',
           schema: 'public',
           table: 'messages',
-          filter: `group_id=eq.${currentGroup}`
+          filter: `group_id=eq.${selectedGroup}`
         },
         (payload) => {
           const newMessage = payload.new as ChatMessage
@@ -226,18 +522,18 @@ export default function ChatContainer() {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [currentGroup])
+  }, [selectedGroup])
 
   const sendMessage = async () => {
-    if (!currentMessage.trim() || !currentGroup || !username.trim()) {
+    if (!newMessage.trim() || !selectedGroup || !userName.trim()) {
       return
     }
 
     try {
       const messageData = {
-        content: currentMessage.trim(),
-        group_id: currentGroup,
-        user_id: username.trim(),
+        content: newMessage.trim(),
+        group_id: selectedGroup,
+        user_id: userName.trim(),
         created_at: new Date().toISOString()
       }
 
@@ -249,20 +545,18 @@ export default function ChatContainer() {
 
       if (error) throw error
 
-      setCurrentMessage('')
+      setNewMessage('')
     } catch (error: any) {
       alert('Error al enviar el mensaje: ' + error.message)
     }
   }
 
   const createGroup = async () => {
-    const name = prompt('Nombre del grupo:')
-
-    if (!name) return
+    if (!newGroupName.trim()) return
 
     try {
       const groupData = {
-        name,
+        name: newGroupName.trim(),
         created_at: new Date().toISOString()
       }
 
@@ -276,129 +570,124 @@ export default function ChatContainer() {
       
       if (data) {
         setGroups(prevGroups => [...prevGroups, data])
-        setCurrentGroup(data.id)
+        setSelectedGroup(data.id)
+        setNewGroupName('')
+        setShowCreateGroupModal(false)
       }
     } catch (error: any) {
       alert('Error al crear el grupo: ' + error.message)
     }
   }
 
-  if (!username) {
-    return (
-      <div style={{ padding: '2rem', textAlign: 'center' }}>
-        <h2>Ingresa tu nombre de usuario</h2>
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          const trimmedUsername = tempUsername.trim();
-          if (trimmedUsername) {
-            setUsername(trimmedUsername);
-          }
-        }}>
-          <input
-            type="text"
-            value={tempUsername}
-            onChange={(e) => setTempUsername(e.target.value)}
-            style={{ 
-              padding: '0.5rem', 
-              marginRight: '1rem',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              fontSize: '1rem'
-            }}
-            placeholder="Escribe tu nombre..."
-            autoFocus
-          />
-          <button
-            type="submit"
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#3498db',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '1rem'
-            }}
-            disabled={!tempUsername.trim()}
-          >
-            Comenzar
-          </button>
-        </form>
-      </div>
-    )
+  if (isLoading) {
+    return null // O podrías retornar un spinner/loader aquí
   }
 
   return (
-    <ChatLayout>
-      <MenuButton onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
-        {isSidebarOpen ? '✕' : '☰'}
-      </MenuButton>
-      <Sidebar className={isSidebarOpen ? 'open' : ''}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h2>Grupos</h2>
-          <button
-            onClick={createGroup}
-            style={{
-              padding: '0.25rem 0.5rem',
-              backgroundColor: '#2ecc71',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            +
-          </button>
-        </div>
-        {groups.map(group => (
-          <div 
-            key={group.id}
-            onClick={() => setCurrentGroup(group.id)}
-            style={{
-              cursor: 'pointer',
-              padding: '0.5rem',
-              backgroundColor: currentGroup === group.id ? '#34495e' : 'transparent',
-              borderRadius: '4px'
-            }}
-          >
-            {group.name}
-          </div>
-        ))}
-      </Sidebar>
-      
-      <ChatArea>
-        <MessageList>
-          {messages.map(message => (
-            <div 
-              key={message.id}
-              style={{
-                marginBottom: '0.5rem',
-                textAlign: message.user_id === username ? 'right' : 'left'
-              }}
-            >
-              <strong>{message.user_id}</strong>: {message.content}
-              {message.image_url && (
-                <img 
-                  src={message.image_url} 
-                  alt="Message attachment" 
-                  style={{ maxWidth: '200px', display: 'block', marginTop: '0.5rem' }}
-                />
-              )}
-            </div>
-          ))}
-        </MessageList>
-        
-        <MessageInput>
-          <input
+    <>
+      {showUserNameModal && (
+        <UserNameModal>
+          <h3>Ingresa tu nombre de usuario</h3>
+          <Input
             type="text"
-            value={currentMessage}
-            onChange={(e) => setCurrentMessage(e.target.value)}
-            placeholder="Escribe un mensaje..."
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            placeholder="Nombre de usuario"
+            autoFocus
           />
-          <button onClick={sendMessage}>Enviar</button>
-        </MessageInput>
-      </ChatArea>
-    </ChatLayout>
+          <Button onClick={() => handleUserNameSubmit(userName)}>
+            Guardar
+          </Button>
+        </UserNameModal>
+      )}
+
+      {showCreateGroupModal && (
+        <CreateGroupModal>
+          <h3>Crear nuevo grupo</h3>
+          <Input
+            type="text"
+            value={newGroupName}
+            onChange={(e) => setNewGroupName(e.target.value)}
+            placeholder="Nombre del grupo"
+            autoFocus
+            onKeyPress={(e) => e.key === 'Enter' && createGroup()}
+          />
+          <div className="buttons">
+            <CancelButton onClick={() => {
+              setNewGroupName('')
+              setShowCreateGroupModal(false)
+            }}>
+              Cancelar
+            </CancelButton>
+            <Button onClick={createGroup}>
+              Crear Grupo
+            </Button>
+          </div>
+        </CreateGroupModal>
+      )}
+
+      {!showUserNameModal && (
+        <ChatLayout>
+          <MenuButton onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+            {isSidebarOpen ? '✕' : '☰'}
+          </MenuButton>
+          <Sidebar className={isSidebarOpen ? 'open' : ''}>
+            <UserNameDisplay>
+              <span>{userName}</span>
+              <Button onClick={handleChangeUserName}>Cambiar nombre</Button>
+            </UserNameDisplay>
+            <GroupHeader>
+              <h2>Grupos</h2>
+              <CreateGroupButton onClick={() => setShowCreateGroupModal(true)}>
+                +
+              </CreateGroupButton>
+            </GroupHeader>
+            {groups.map(group => (
+              <GroupItem 
+                key={group.id}
+                isSelected={selectedGroup === group.id}
+                onClick={() => setSelectedGroup(group.id)}
+              >
+                {group.name}
+              </GroupItem>
+            ))}
+          </Sidebar>
+          
+          <ChatArea>
+            <MessageList>
+              {messages.map(message => (
+                <div 
+                  key={message.id}
+                  style={{
+                    marginBottom: '0.5rem',
+                    textAlign: message.user_id === userName ? 'right' : 'left'
+                  }}
+                >
+                  <strong>{message.user_id}</strong>: {message.content}
+                  {message.image_url && (
+                    <img 
+                      src={message.image_url} 
+                      alt="Message attachment" 
+                      style={{ maxWidth: '200px', display: 'block', marginTop: '0.5rem' }}
+                    />
+                  )}
+                </div>
+              ))}
+            </MessageList>
+            
+            <MessageInput>
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Escribe un mensaje..."
+                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+              />
+              <button onClick={sendMessage}>Enviar</button>
+            </MessageInput>
+          </ChatArea>
+        </ChatLayout>
+      )}
+    </>
   )
 } 

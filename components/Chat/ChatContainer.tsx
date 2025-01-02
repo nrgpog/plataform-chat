@@ -12,7 +12,7 @@ interface SidebarProps {
 const ChatLayout = styled.div`
   display: grid;
   grid-template-columns: 280px 1fr;
-  height: 100vh;
+  height: 100dvh;
   background: #1a1a1a;
   position: fixed;
   top: 0;
@@ -24,6 +24,7 @@ const ChatLayout = styled.div`
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
     position: fixed;
+    height: 100dvh;
   }
 `
 
@@ -33,14 +34,14 @@ const Sidebar = styled.div`
   padding: 1.5rem;
   overflow-y: auto;
   border-right: 1px solid #2d2d2d;
-  height: 100vh;
+  height: 100dvh;
 
   @media (max-width: 768px) {
     position: fixed;
     top: 0;
     left: 0;
     width: 85%;
-    height: 100%;
+    height: 100dvh;
     z-index: 20;
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateX(-100%);
@@ -55,13 +56,13 @@ const ChatArea = styled.div`
   display: flex;
   flex-direction: column;
   background: #1a1a1a;
-  height: 100vh;
+  height: 100dvh;
   position: relative;
   overflow: hidden;
 
   @media (max-width: 768px) {
     width: 100%;
-    height: 100vh;
+    height: 100dvh;
     position: fixed;
     top: 0;
     left: 0;
@@ -76,6 +77,8 @@ const MessageList = styled.div`
   overflow-y: auto;
   background: #1a1a1a;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  height: calc(100dvh - 70px);
   
   @media (max-width: 768px) {
     padding: 1rem;
@@ -85,7 +88,7 @@ const MessageList = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    height: 100%;
+    height: calc(100dvh - 70px);
   }
 
   /* Estilo para los mensajes */

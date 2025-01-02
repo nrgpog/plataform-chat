@@ -75,17 +75,17 @@ const MessageList = styled.div`
   padding: 1.5rem;
   overflow-y: auto;
   background: #f8f9fa;
-  -webkit-overflow-scrolling: touch; /* Para mejor scroll en iOS */
+  -webkit-overflow-scrolling: touch;
   
   @media (max-width: 768px) {
     padding: 1rem;
-    height: calc(100vh - 70px);
-    padding-bottom: 80px;
-    position: absolute;
+    padding-bottom: calc(70px + 1rem);
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    bottom: 70px;
+    bottom: 0;
+    height: 100%;
   }
 
   /* Estilo para los mensajes */
@@ -138,13 +138,14 @@ const MessageInput = styled.div`
   
   @media (max-width: 768px) {
     padding: 0.8rem;
-    position: absolute;
+    position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     background: #ffffff;
     z-index: 10;
-    height: 70px;
+    min-height: 70px;
+    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.05);
   }
   
   input {

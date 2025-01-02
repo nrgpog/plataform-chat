@@ -14,12 +14,16 @@ const ChatLayout = styled.div`
   grid-template-columns: 280px 1fr;
   height: 100vh;
   background: #ffffff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
-    position: relative;
-    height: 100vh;
-    overflow: hidden;
+    position: fixed;
   }
 `
 
@@ -53,6 +57,7 @@ const ChatArea = styled.div`
   background: #ffffff;
   height: 100vh;
   position: relative;
+  overflow: hidden;
 
   @media (max-width: 768px) {
     width: 100%;
@@ -70,11 +75,17 @@ const MessageList = styled.div`
   padding: 1.5rem;
   overflow-y: auto;
   background: #f8f9fa;
+  -webkit-overflow-scrolling: touch; /* Para mejor scroll en iOS */
   
   @media (max-width: 768px) {
     padding: 1rem;
     height: calc(100vh - 70px);
     padding-bottom: 80px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 70px;
   }
 
   /* Estilo para los mensajes */
@@ -127,12 +138,13 @@ const MessageInput = styled.div`
   
   @media (max-width: 768px) {
     padding: 0.8rem;
-    position: fixed;
+    position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
     background: #ffffff;
     z-index: 10;
+    height: 70px;
   }
   
   input {

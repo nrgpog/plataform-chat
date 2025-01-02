@@ -102,7 +102,7 @@ const MessageList = styled.div`
     &[style*="text-align: right"] {
       margin-left: auto;
       background: #00b894;
-      color: white;
+      color: #ffffff;
       border-bottom-right-radius: 0.3rem;
       box-shadow: 0 2px 4px rgba(0, 184, 148, 0.1);
       
@@ -114,7 +114,7 @@ const MessageList = styled.div`
     &[style*="text-align: left"] {
       margin-right: auto;
       background: #e9ecef;
-      color: #1e1e1e;
+      color: #2d3436;
       border-bottom-left-radius: 0.3rem;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
@@ -122,7 +122,7 @@ const MessageList = styled.div`
         display: block;
         font-size: 0.8rem;
         margin-bottom: 0.3rem;
-        color: #6c757d;
+        color: #636e72;
       }
     }
   }
@@ -156,6 +156,7 @@ const MessageInput = styled.div`
     border-radius: 20px;
     font-size: 0.95rem;
     transition: all 0.2s ease;
+    color: #2d3436;
     
     &:focus {
       outline: none;
@@ -163,7 +164,7 @@ const MessageInput = styled.div`
     }
     
     &::placeholder {
-      color: #65676b;
+      color: #95a5a6;
     }
     
     @media (max-width: 768px) {
@@ -174,7 +175,7 @@ const MessageInput = styled.div`
   button {
     padding: 0.7rem;
     background: #6c5ce7;
-    color: white;
+    color: #ffffff;
     border: none;
     border-radius: 50%;
     width: 40px;
@@ -253,7 +254,7 @@ const UserNameModal = styled.div`
 const Button = styled.button`
   padding: 0.7rem 1.2rem;
   background: #6c5ce7;
-  color: white;
+  color: #ffffff;
   border: none;
   border-radius: 20px;
   cursor: pointer;
@@ -283,6 +284,7 @@ const Input = styled.input`
   font-size: 0.95rem;
   transition: all 0.2s ease;
   margin-bottom: 1rem;
+  color: #2d3436;
 
   &:focus {
     outline: none;
@@ -290,7 +292,7 @@ const Input = styled.input`
   }
 
   &::placeholder {
-    color: #65676b;
+    color: #95a5a6;
   }
 `
 
@@ -331,6 +333,7 @@ const GroupItem = styled.div<{ isSelected: boolean }>`
   transition: all 0.2s ease;
   background: ${props => props.isSelected ? '#2d2d2d' : 'transparent'};
   border: 1px solid ${props => props.isSelected ? '#ffffff20' : 'transparent'};
+  color: #ffffff;
   
   &:hover {
     background: ${props => !props.isSelected && '#ffffff10'};
@@ -402,8 +405,8 @@ const CreateGroupModal = styled(UserNameModal)`
 
 const CancelButton = styled(Button)`
   background: transparent;
-  color: #65676b;
-  border: 1px solid #dadde1;
+  color: #2d3436;
+  border: 1px solid #dfe6e9;
 
   &:hover {
     background: #f0f2f5;

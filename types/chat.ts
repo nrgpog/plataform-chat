@@ -5,6 +5,7 @@ export interface ChatMessage {
   group_id: string
   image_url?: string
   created_at: string
+  reply_to?: string | null
 }
 
 export interface ChatGroup {

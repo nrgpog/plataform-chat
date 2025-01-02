@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import supabase from '@/lib/supabase'
 import { ChatMessage, ChatGroup } from '@/types/chat'
 import styled from 'styled-components'
+import { useSwipeable } from 'react-swipeable'
 
 interface SidebarProps {
   isOpen: boolean;
@@ -68,6 +69,25 @@ const ChatArea = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
+  }
+`
+
+const Message = styled.div<{ isSwipedLeft?: boolean; isSwipedRight?: boolean }>`
+  transform: translateX(${props => {
+    if (props.isSwipedLeft) return '-50px';
+    if (props.isSwipedRight) return '50px';
+    return '0';
+  }});
+  transition: transform 0.3s ease;
+  
+  &::after {
+    content: '↩️';
+    position: absolute;
+    top: 50%;
+    opacity: ${props => (props.isSwipedLeft || props.isSwipedRight) ? '1' : '0'};
+    transition: opacity 0.3s ease;
+    transform: translateY(-50%);
+    ${props => props.isSwipedLeft ? 'right: -30px;' : 'left: -30px;'}
   }
 `
 
@@ -333,18 +353,18 @@ const UserNameDisplay = styled.div`
   }
 `
 
-const GroupItem = styled.div<{ isSelected: boolean }>`
+const GroupItem = styled.div<{ $isSelected: boolean }>`
   cursor: pointer;
   padding: 0.8rem 1rem;
   border-radius: 0.8rem;
   margin-bottom: 0.5rem;
   transition: all 0.2s ease;
-  background: ${props => props.isSelected ? '#2d2d2d' : 'transparent'};
-  border: 1px solid ${props => props.isSelected ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
+  background: ${props => props.$isSelected ? '#2d2d2d' : 'transparent'};
+  border: 1px solid ${props => props.$isSelected ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
   color: #e0e0e0;
   
   &:hover {
-    background: ${props => !props.isSelected && 'rgba(255, 255, 255, 0.05)'};
+    background: ${props => !props.$isSelected && 'rgba(255, 255, 255, 0.05)'};
   }
 `
 
@@ -423,6 +443,134 @@ const CancelButton = styled(Button)`
   }
 `
 
+const ReplyIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M9 14L4 9L9 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M4 9H15C18.866 9 22 12.134 22 16V20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+  </svg>
+);
+
+// Componente MessageItem separado
+const MessageItem = ({ 
+  message, 
+  userName, 
+  swipedMessageId, 
+  swipeDirection, 
+  replyingTo,
+  onSwipe,
+  messages 
+}: { 
+  message: ChatMessage;
+  userName: string;
+  swipedMessageId: string | null;
+  swipeDirection: 'left' | 'right' | null;
+  replyingTo: ChatMessage | null;
+  onSwipe: (messageId: string, direction: 'left' | 'right') => void;
+  messages: ChatMessage[];
+}) => {
+  // Buscar si este mensaje es una respuesta a otro
+  const repliedToMessage = message.reply_to ? messages.find(m => m.id === message.reply_to) : null;
+
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => onSwipe(message.id, 'left'),
+    onSwipedRight: () => onSwipe(message.id, 'right'),
+    trackMouse: true,
+    delta: 50,
+    preventScrollOnSwipe: true,
+    swipeDuration: 500
+  });
+
+  const isCurrentMessageSwiped = swipedMessageId === message.id;
+  const currentSwipeDirection = isCurrentMessageSwiped ? swipeDirection : null;
+
+  return (
+    <div
+      {...swipeHandlers}
+      style={{ 
+        textAlign: message.user_id === userName ? 'right' : 'left',
+        transform: `translateX(${
+          currentSwipeDirection === 'left' ? '-50px' : 
+          currentSwipeDirection === 'right' ? '50px' : '0'
+        })`,
+        transition: 'transform 0.3s ease',
+        position: 'relative',
+        padding: '0.8rem 1.2rem',
+        borderRadius: '1rem',
+        marginBottom: '1rem',
+        maxWidth: '85%',
+        fontSize: '0.95rem',
+        lineHeight: 1.5,
+        wordBreak: 'break-word',
+        background: message.user_id === userName ? '#4a4a4a' : '#2d2d2d',
+        color: '#e0e0e0',
+        marginLeft: message.user_id === userName ? 'auto' : '0',
+        marginRight: message.user_id === userName ? '0' : 'auto',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'
+      }}
+    >
+      {repliedToMessage && (
+        <div style={{
+          padding: '4px 8px',
+          marginBottom: '8px',
+          borderLeft: '2px solid #666',
+          background: 'rgba(0,0,0,0.2)',
+          borderRadius: '4px',
+          fontSize: '0.85rem',
+          color: '#999',
+          cursor: 'pointer'
+        }}>
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '4px',
+            marginBottom: '2px',
+            color: '#888'
+          }}>
+            <ReplyIcon />
+            <span>{repliedToMessage.user_id}</span>
+          </div>
+          <div style={{
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap'
+          }}>
+            {repliedToMessage.content}
+          </div>
+        </div>
+      )}
+      <strong style={{ 
+        display: message.user_id === userName ? 'none' : 'block',
+        fontSize: '0.8rem',
+        marginBottom: '0.3rem',
+        color: '#888888'
+      }}>{message.user_id}</strong>
+      {message.content}
+      {message.image_url && (
+        <img 
+          src={message.image_url} 
+          alt="Message attachment" 
+          style={{ maxWidth: '200px', display: 'block', marginTop: '0.5rem' }}
+        />
+      )}
+      {isCurrentMessageSwiped && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            [currentSwipeDirection === 'left' ? 'right' : 'left']: '-30px',
+            opacity: 1,
+            transition: 'opacity 0.3s ease',
+            color: '#888'
+          }}
+        >
+          <ReplyIcon />
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function ChatContainer() {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [newMessage, setNewMessage] = useState('')
@@ -434,6 +582,10 @@ export default function ChatContainer() {
   const [newGroupName, setNewGroupName] = useState('')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [swipedMessageId, setSwipedMessageId] = useState<string | null>(null)
+  const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null)
+  const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null)
+  const [replyPreview, setReplyPreview] = useState<string>('');
 
   const loadGroups = async () => {
     const { data, error } = await supabase
@@ -505,7 +657,6 @@ export default function ChatContainer() {
       return
     }
     
-    // Cargar mensajes existentes
     const loadMessages = async () => {
       const { data, error } = await supabase
         .from('messages')
@@ -521,7 +672,7 @@ export default function ChatContainer() {
     }
     loadMessages()
 
-    // Suscribirse a cambios en los mensajes del grupo actual
+    // Suscribirse a cambios en los mensajes
     const channel = supabase
       .channel(`messages:${selectedGroup}`)
       .on('postgres_changes', 
@@ -551,7 +702,7 @@ export default function ChatContainer() {
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !selectedGroup || !userName.trim()) {
-      return
+      return;
     }
 
     try {
@@ -559,10 +710,11 @@ export default function ChatContainer() {
         content: newMessage.trim(),
         group_id: selectedGroup,
         user_id: userName.trim(),
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        reply_to: replyingTo ? replyingTo.id : null
       }
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('messages')
         .insert([messageData])
         .select()
@@ -570,9 +722,44 @@ export default function ChatContainer() {
 
       if (error) throw error
 
-      setNewMessage('')
+      setNewMessage('');
+      setReplyingTo(null);
+      setReplyPreview('');
+      setSwipedMessageId(null);
+      setSwipeDirection(null);
     } catch (error: any) {
-      alert('Error al enviar el mensaje: ' + error.message)
+      console.error('Error al enviar el mensaje:', error);
+      // Si hay un error con reply_to, intentamos enviar sin la referencia
+      if (error.message.includes('reply_to')) {
+        try {
+          const messageData = {
+            content: newMessage.trim(),
+            group_id: selectedGroup,
+            user_id: userName.trim(),
+            created_at: new Date().toISOString()
+          }
+
+          const { error: secondError } = await supabase
+            .from('messages')
+            .insert([messageData])
+            .select()
+            .single()
+
+          if (!secondError) {
+            setNewMessage('');
+            setReplyingTo(null);
+            setReplyPreview('');
+            setSwipedMessageId(null);
+            setSwipeDirection(null);
+          } else {
+            alert('Error al enviar el mensaje: ' + secondError.message);
+          }
+        } catch (e: any) {
+          alert('Error al enviar el mensaje: ' + e.message);
+        }
+      } else {
+        alert('Error al enviar el mensaje: ' + error.message);
+      }
     }
   }
 
@@ -603,6 +790,24 @@ export default function ChatContainer() {
       alert('Error al crear el grupo: ' + error.message)
     }
   }
+
+  const handleSwipeAction = (messageId: string, direction: 'left' | 'right') => {
+    setSwipedMessageId(messageId);
+    setSwipeDirection(direction);
+    
+    const messageToReply = messages.find(m => m.id === messageId);
+    if (messageToReply) {
+      setReplyPreview(messageToReply.content);
+      setReplyingTo(messageToReply);
+    }
+  };
+
+  const cancelReply = () => {
+    setReplyingTo(null);
+    setReplyPreview('');
+    setSwipedMessageId(null);
+    setSwipeDirection(null);
+  };
 
   if (isLoading) {
     return null // O podrías retornar un spinner/loader aquí
@@ -670,7 +875,7 @@ export default function ChatContainer() {
             {groups.map(group => (
               <GroupItem 
                 key={group.id}
-                isSelected={selectedGroup === group.id}
+                $isSelected={selectedGroup === group.id}
                 onClick={() => setSelectedGroup(group.id)}
               >
                 {group.name}
@@ -681,31 +886,65 @@ export default function ChatContainer() {
           <ChatArea>
             <MessageList>
               {messages.map(message => (
-                <div 
+                <MessageItem
                   key={message.id}
-                  style={{
-                    marginBottom: '0.5rem',
-                    textAlign: message.user_id === userName ? 'right' : 'left'
-                  }}
-                >
-                  <strong>{message.user_id}</strong>: {message.content}
-                  {message.image_url && (
-                    <img 
-                      src={message.image_url} 
-                      alt="Message attachment" 
-                      style={{ maxWidth: '200px', display: 'block', marginTop: '0.5rem' }}
-                    />
-                  )}
-                </div>
+                  message={message}
+                  userName={userName}
+                  swipedMessageId={swipedMessageId}
+                  swipeDirection={swipeDirection}
+                  replyingTo={replyingTo}
+                  onSwipe={handleSwipeAction}
+                  messages={messages}
+                />
               ))}
             </MessageList>
             
             <MessageInput>
+              {replyingTo && (
+                <div style={{
+                  position: 'absolute',
+                  top: '-40px',
+                  left: 0,
+                  right: 0,
+                  background: '#1a1a1a',
+                  padding: '8px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  borderTop: '1px solid #2d2d2d',
+                  fontSize: '0.9rem',
+                  color: '#888'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ReplyIcon />
+                    <span style={{
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      maxWidth: '200px'
+                    }}>
+                      {replyPreview}
+                    </span>
+                  </div>
+                  <button 
+                    onClick={cancelReply}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#888',
+                      cursor: 'pointer',
+                      padding: '4px'
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
               <input
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Escribe un mensaje..."
+                placeholder={replyingTo ? "Responder mensaje..." : "Escribe un mensaje..."}
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
               />
               <button onClick={sendMessage}>Enviar</button>

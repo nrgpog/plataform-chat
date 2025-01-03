@@ -5,9 +5,19 @@ import supabase from '@/lib/supabase'
 import { ChatMessage, ChatGroup } from '@/types/chat'
 import styled from 'styled-components'
 import { useSwipeable } from 'react-swipeable'
+import { css } from 'styled-components'
 
 interface SidebarProps {
   isOpen: boolean;
+}
+
+interface StyledProps {
+  $hasReply?: boolean;
+  $isVisible?: boolean;
+  $isSelected?: boolean;
+  $isChecked?: boolean;
+  $swipeOffset?: number;
+  $currentSwipeDirection?: 'left' | 'right';
 }
 
 const ChatLayout = styled.div`
@@ -61,6 +71,7 @@ const ChatArea = styled.div`
   height: 100dvh;
   position: relative;
   overflow: hidden;
+  overscroll-behavior: contain;
 
   @media (max-width: 768px) {
     width: 100%;
@@ -92,7 +103,7 @@ const Message = styled.div<{ isSwipedLeft?: boolean; isSwipedRight?: boolean }>`
   }
 `
 
-const MessageList = styled.div<{ $hasReply?: boolean }>`
+const MessageList = styled.div<StyledProps>`
   flex: 1;
   padding: 1.5rem;
   overflow-y: auto;
@@ -100,7 +111,7 @@ const MessageList = styled.div<{ $hasReply?: boolean }>`
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   height: calc(100dvh - 70px);
-  padding-bottom: calc(70px + ${props => props.$hasReply ? '40px' : '0px'});
+  padding-bottom: ${props => props.$hasReply ? 'calc(70px + 40px)' : '70px'};
   
   @media (max-width: 768px) {
     position: fixed;
@@ -161,7 +172,7 @@ const MessageInput = styled.div`
   align-items: center;
   position: fixed;
   bottom: 0;
-  left: 0;
+  left: 280px;
   right: 0;
   height: 70px;
   z-index: 10;
@@ -169,6 +180,13 @@ const MessageInput = styled.div`
   
   @media (max-width: 768px) {
     padding: 0.8rem;
+    min-height: 70px;
+    height: auto;
+    gap: 0.8rem;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    left: 0;
   }
 
   input {
@@ -183,6 +201,17 @@ const MessageInput = styled.div`
     color: #e0e0e0;
     line-height: 42px;
     
+    @media (max-width: 768px) {
+      height: 45px;
+      padding: 0 1.2rem;
+      border-radius: 25px;
+      font-size: 16px;
+      max-width: calc(100% - 60px);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+    }
+    
     &:focus {
       outline: none;
       background: #3d3d3d;
@@ -191,10 +220,6 @@ const MessageInput = styled.div`
     
     &::placeholder {
       color: #888888;
-    }
-    
-    @media (max-width: 768px) {
-      font-size: 16px;
     }
   }
 `
@@ -246,12 +271,28 @@ const UserNameModal = styled.div`
   width: 90%;
   max-width: 400px;
 
+  @media (max-width: 768px) {
+    background: rgba(36, 36, 36, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
   h3 {
     margin: 0 0 1.5rem 0;
     color: #e0e0e0;
     font-size: 1.5rem;
     text-align: center;
     font-weight: 600;
+  }
+
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
   }
 `
 
@@ -509,8 +550,8 @@ const ReplyPreview = styled.div`
 `
 
 const SendButton = styled.button`
-  min-width: 42px;
-  height: 42px;
+  min-width: 45px;
+  height: 45px;
   padding: 0;
   background: #4a4a4a;
   color: #e0e0e0;
@@ -522,6 +563,7 @@ const SendButton = styled.button`
   justify-content: center;
   transition: all 0.2s ease;
   flex-shrink: 0;
+  margin-right: 0;
   
   &:hover {
     transform: scale(1.05);
@@ -530,6 +572,11 @@ const SendButton = styled.button`
 
   &:active {
     transform: scale(0.95);
+  }
+
+  @media (max-width: 768px) {
+    width: 45px;
+    height: 45px;
   }
 `
 

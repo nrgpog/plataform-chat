@@ -387,9 +387,18 @@ const GroupItem = styled.div<{ $isSelected: boolean }>`
   background: ${props => props.$isSelected ? '#2d2d2d' : 'transparent'};
   border: 1px solid ${props => props.$isSelected ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
   color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   
   &:hover {
     background: ${props => !props.$isSelected && 'rgba(255, 255, 255, 0.05)'};
+  }
+
+  .group-name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 `
 
@@ -451,6 +460,42 @@ const CreateGroupModal = styled(UserNameModal)`
     }
   }
 
+  .group-type {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: #e0e0e0;
+  }
+
+  .invite-code {
+    background: #2d2d2d;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    span {
+      color: #e0e0e0;
+      font-family: monospace;
+    }
+
+    button {
+      background: transparent;
+      border: none;
+      color: #e0e0e0;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 0.25rem;
+      }
+    }
+  }
+
   @media (max-width: 768px) {
     width: 95%;
     padding: 1.5rem;
@@ -468,12 +513,430 @@ const CancelButton = styled(Button)`
   }
 `
 
+const ReplyPreview = styled.div`
+  position: absolute;
+  bottom: 70px;
+  left: 0;
+  right: 0;
+  background: #1a1a1a;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #2d2d2d;
+  font-size: 0.9rem;
+  color: #888;
+  z-index: 11;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  button {
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 4px;
+    
+    &:hover {
+      color: #aaa;
+    }
+  }
+
+  @media (max-width: 768px) {
+    position: fixed;
+    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
+  }
+`
+
+const SendButton = styled.button`
+  padding: 0.7rem;
+  background: #4a4a4a;
+  color: #e0e0e0;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: scale(1.05);
+    background: #555555;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+`
+
 const ReplyIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M9 14L4 9L9 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M4 9H15C18.866 9 22 12.134 22 16V20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M4 9H15C18.866 9 22 12.134 22 16V20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
+
+const LockIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M19 11H5C3.89543 11 3 11.8954 3 13V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V13C21 11.8954 20.1046 11 19 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M7 11V7C7 5.67392 7.52678 4.40215 8.46447 3.46447C9.40215 2.52678 10.6739 2 12 2C13.3261 2 14.5979 2.52678 15.5355 3.46447C16.4732 4.40215 17 5.67392 17 7V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const PrivateGroupSelector = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+
+  .selector-content {
+    background: #242424;
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: #2d2d2d;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #333333;
+    }
+
+    input[type="checkbox"] {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #4a4a4a;
+      border-radius: 4px;
+      margin: 0;
+      display: grid;
+      place-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &::before {
+        content: "";
+        width: 12px;
+        height: 12px;
+        transform: scale(0);
+        transition: transform 0.2s ease;
+        box-shadow: inset 1em 1em #ffffff;
+        transform-origin: center;
+        clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+      }
+
+      &:checked {
+        background: #4a4a4a;
+        border-color: #4a4a4a;
+
+        &::before {
+          transform: scale(1);
+        }
+      }
+
+      &:focus {
+        outline: none;
+        border-color: #666666;
+      }
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #e0e0e0;
+      font-size: 0.95rem;
+      user-select: none;
+    }
+  }
+`
+
+const InfoIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M12 16V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M12 8H12.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+interface CustomCheckboxProps {
+  $checked: boolean;
+}
+
+const CustomCheckbox = styled.div<CustomCheckboxProps>`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #2d2d2d;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 1rem 0;
+
+  &:hover {
+    background: #333333;
+  }
+
+  .checkbox {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #4a4a4a;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    background: ${props => props.$checked ? '#4a4a4a' : 'transparent'};
+
+    svg {
+      opacity: ${props => props.$checked ? 1 : 0};
+      transform: scale(${props => props.$checked ? 1 : 0});
+      transition: all 0.2s ease;
+    }
+  }
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    user-select: none;
+  }
+`
+
+const CheckIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const InfoModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+
+  .modal-content {
+    background: #242424;
+    padding: 2rem;
+    border-radius: 1rem;
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+  }
+
+  h3 {
+    color: #e0e0e0;
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  p {
+    color: #aaa;
+    margin: 1rem 0;
+    line-height: 1.5;
+  }
+
+  .code-example {
+    background: #1a1a1a;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    font-family: monospace;
+    margin: 1rem 0;
+    color: #e0e0e0;
+  }
+
+  .close-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #e0e0e0;
+    }
+  }
+`
+
+const GroupInfoButton = styled.button`
+  background: transparent;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e0e0e0;
+  }
+`
+
+const CopyNotification = styled.div<{ $show: boolean }>`
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(${props => props.$show ? '0' : '20px'});
+  background: #4CAF50;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 2rem;
+  font-size: 0.9rem;
+  opacity: ${props => props.$show ? '1' : '0'};
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+`
+
+const CheckMarkIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 6L9 17L4 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const CommandSuggestions = styled.div<{ $show: boolean }>`
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  background: #242424;
+  border-radius: 0.5rem 0.5rem 0 0;
+  overflow: hidden;
+  transform: translateY(${props => props.$show ? '0' : '10px'});
+  opacity: ${props => props.$show ? '1' : '0'};
+  pointer-events: ${props => props.$show ? 'auto' : 'none'};
+  transition: all 0.2s ease;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+`
+
+const CommandItem = styled.div<{ $isSelected: boolean }>`
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  background: ${props => props.$isSelected ? '#333333' : 'transparent'};
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #333333;
+  }
+
+  .command-name {
+    color: #e0e0e0;
+    font-weight: 500;
+  }
+
+  .command-description {
+    color: #888;
+    font-size: 0.9rem;
+  }
+
+  .command-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2d2d2d;
+    border-radius: 8px;
+    color: #e0e0e0;
+    padding: 6px;
+  }
+`
+
+const JoinIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M15 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M19 12L15 8M19 12L15 16M19 12H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+
+const HelpIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M9 9C9 7.89543 9.89543 7 11 7H12C13.1046 7 14 7.89543 14 9C14 10.1046 13.1046 11 12 11H12V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="12" cy="17" r="1" fill="currentColor"/>
+  </svg>
+);
+
+const commands = [
+  {
+    name: '/join',
+    description: 'Unirse a un grupo privado usando código de invitación',
+    icon: <JoinIcon />,
+    example: '/join ABC1234'
+  },
+  {
+    name: '/help',
+    description: 'Mostrar lista de comandos disponibles',
+    icon: <HelpIcon />,
+    example: '/help'
+  }
+];
 
 // Componente MessageItem separado
 const MessageItem = ({ 
@@ -605,12 +1068,19 @@ export default function ChatContainer() {
   const [showUserNameModal, setShowUserNameModal] = useState(false)
   const [showCreateGroupModal, setShowCreateGroupModal] = useState(false)
   const [newGroupName, setNewGroupName] = useState('')
+  const [isPrivateGroup, setIsPrivateGroup] = useState(false)
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [swipedMessageId, setSwipedMessageId] = useState<string | null>(null)
   const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null)
   const [replyingTo, setReplyingTo] = useState<ChatMessage | null>(null)
-  const [replyPreview, setReplyPreview] = useState<string>('');
+  const [replyPreview, setReplyPreview] = useState<string>('')
+  const [createdInviteCode, setCreatedInviteCode] = useState<string>('')
+  const [showInfoModal, setShowInfoModal] = useState<string | null>(null)
+  const [showCopyNotification, setShowCopyNotification] = useState(false)
+  const [showCommands, setShowCommands] = useState(false)
+  const [selectedCommandIndex, setSelectedCommandIndex] = useState(0)
+  const [filteredCommands, setFilteredCommands] = useState(commands)
 
   const loadGroups = async () => {
     const { data, error } = await supabase
@@ -788,13 +1258,26 @@ export default function ChatContainer() {
     }
   }
 
+  const generateInviteCode = () => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    for (let i = 0; i < 7; i++) {
+      code += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return code;
+  }
+
   const createGroup = async () => {
     if (!newGroupName.trim()) return
 
     try {
+      const inviteCode = isPrivateGroup ? generateInviteCode() : undefined;
+      
       const groupData = {
         name: newGroupName.trim(),
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        is_private: isPrivateGroup,
+        invite_code: inviteCode
       }
 
       const { data, error } = await supabase
@@ -809,10 +1292,60 @@ export default function ChatContainer() {
         setGroups(prevGroups => [...prevGroups, data])
         setSelectedGroup(data.id)
         setNewGroupName('')
-        setShowCreateGroupModal(false)
+        if (isPrivateGroup) {
+          setCreatedInviteCode(inviteCode!)
+        } else {
+          setShowCreateGroupModal(false)
+        }
       }
     } catch (error: any) {
       alert('Error al crear el grupo: ' + error.message)
+    }
+  }
+
+  const handleMessage = async (message: string) => {
+    if (message.startsWith('/join ')) {
+      const code = message.split(' ')[1];
+      if (code && code.length === 7) {
+        try {
+          const { data, error } = await supabase
+            .from('groups')
+            .select('*')
+            .eq('invite_code', code)
+            .single()
+
+          if (error) {
+            alert('Código de invitación inválido')
+            return
+          }
+
+          if (data) {
+            setGroups(prevGroups => {
+              if (!prevGroups.find(g => g.id === data.id)) {
+                return [...prevGroups, data]
+              }
+              return prevGroups
+            })
+            setSelectedGroup(data.id)
+          }
+        } catch (error: any) {
+          alert('Error al unirse al grupo: ' + error.message)
+        }
+      } else {
+        alert('Código de invitación inválido')
+      }
+    } else {
+      sendMessage()
+    }
+  }
+
+  const copyInviteCode = async () => {
+    try {
+      await navigator.clipboard.writeText(createdInviteCode);
+      setShowCopyNotification(true);
+      setTimeout(() => setShowCopyNotification(false), 2000);
+    } catch (err) {
+      alert('Error al copiar el código');
     }
   }
 
@@ -832,6 +1365,61 @@ export default function ChatContainer() {
     setReplyPreview('');
     setSwipedMessageId(null);
     setSwipeDirection(null);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showCommands) return;
+
+    switch (e.key) {
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedCommandIndex(prev => 
+          prev > 0 ? prev - 1 : filteredCommands.length - 1
+        );
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedCommandIndex(prev => 
+          prev < filteredCommands.length - 1 ? prev + 1 : 0
+        );
+        break;
+      case 'Tab':
+        e.preventDefault();
+        if (filteredCommands[selectedCommandIndex]) {
+          setNewMessage(filteredCommands[selectedCommandIndex].name + ' ');
+          setShowCommands(false);
+        }
+        break;
+      case 'Enter':
+        if (showCommands && filteredCommands[selectedCommandIndex]) {
+          e.preventDefault();
+          setNewMessage(filteredCommands[selectedCommandIndex].name + ' ');
+          setShowCommands(false);
+        }
+        break;
+      case 'Escape':
+        setShowCommands(false);
+        break;
+    }
+  };
+
+  const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewMessage(value);
+
+    if (value.startsWith('/')) {
+      const search = value.slice(1).toLowerCase();
+      setFilteredCommands(
+        commands.filter(cmd => 
+          cmd.name.toLowerCase().includes(search) || 
+          cmd.description.toLowerCase().includes(search)
+        )
+      );
+      setShowCommands(true);
+      setSelectedCommandIndex(0);
+    } else {
+      setShowCommands(false);
+    }
   };
 
   if (isLoading) {
@@ -856,6 +1444,27 @@ export default function ChatContainer() {
         </UserNameModal>
       )}
 
+      {showInfoModal && (
+        <InfoModal>
+          <div className="modal-content">
+            <button className="close-button" onClick={() => setShowInfoModal(null)}>✕</button>
+            <h3>
+              <LockIcon />
+              Grupo Privado
+            </h3>
+            <p>Este es un grupo privado. Para unirte necesitas un código de invitación.</p>
+            <p>Si tienes un código, puedes unirte escribiendo en el chat:</p>
+            <div className="code-example">/join CÓDIGO</div>
+            <p>Por ejemplo: /join ABC1234</p>
+          </div>
+        </InfoModal>
+      )}
+
+      <CopyNotification $show={showCopyNotification}>
+        <CheckMarkIcon />
+        ¡Código copiado!
+      </CopyNotification>
+
       {showCreateGroupModal && (
         <CreateGroupModal>
           <h3>Crear nuevo grupo</h3>
@@ -865,11 +1474,27 @@ export default function ChatContainer() {
             onChange={(e) => setNewGroupName(e.target.value)}
             placeholder="Nombre del grupo"
             autoFocus
-            onKeyPress={(e) => e.key === 'Enter' && createGroup()}
           />
+          <CustomCheckbox $checked={isPrivateGroup} onClick={() => setIsPrivateGroup(!isPrivateGroup)}>
+            <div className="checkbox">
+              {isPrivateGroup && <CheckIcon />}
+            </div>
+            <label>
+              <LockIcon />
+              Grupo Privado
+            </label>
+          </CustomCheckbox>
+          {createdInviteCode && (
+            <div className="invite-code">
+              <span>{createdInviteCode}</span>
+              <button onClick={copyInviteCode}>Copiar</button>
+            </div>
+          )}
           <div className="buttons">
             <CancelButton onClick={() => {
               setNewGroupName('')
+              setIsPrivateGroup(false)
+              setCreatedInviteCode('')
               setShowCreateGroupModal(false)
             }}>
               Cancelar
@@ -903,7 +1528,17 @@ export default function ChatContainer() {
                 $isSelected={selectedGroup === group.id}
                 onClick={() => setSelectedGroup(group.id)}
               >
-                {group.name}
+                <div className="group-name">
+                  {group.name} {group.is_private && <LockIcon />}
+                </div>
+                {group.is_private && (
+                  <GroupInfoButton onClick={(e) => {
+                    e.stopPropagation();
+                    setShowInfoModal(group.id);
+                  }}>
+                    <InfoIcon />
+                  </GroupInfoButton>
+                )}
               </GroupItem>
             ))}
           </Sidebar>
@@ -923,43 +1558,42 @@ export default function ChatContainer() {
                 />
               ))}
             </MessageList>
-            
+            {replyingTo && (
+              <ReplyPreview>
+                <span>Respondiendo a: {replyPreview}</span>
+                <button onClick={cancelReply}>✕</button>
+              </ReplyPreview>
+            )}
             <MessageInput>
-              {replyingTo && (
-                <div className="reply-preview">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <ReplyIcon />
-                    <span style={{
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      maxWidth: '200px'
-                    }}>
-                      {replyPreview}
-                    </span>
-                  </div>
-                  <button 
-                    onClick={cancelReply}
-                    style={{
-                      background: 'transparent',
-                      border: 'none',
-                      color: '#888',
-                      cursor: 'pointer',
-                      padding: '4px'
+              <CommandSuggestions $show={showCommands}>
+                {filteredCommands.map((cmd, index) => (
+                  <CommandItem 
+                    key={cmd.name}
+                    $isSelected={index === selectedCommandIndex}
+                    onClick={() => {
+                      setNewMessage(cmd.name + ' ');
+                      setShowCommands(false);
                     }}
                   >
-                    ✕
-                  </button>
-                </div>
-              )}
-              <input
+                    <div className="command-icon">{cmd.icon}</div>
+                    <div>
+                      <div className="command-name">{cmd.name}</div>
+                      <div className="command-description">{cmd.description}</div>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandSuggestions>
+              <Input
                 type="text"
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder={replyingTo ? "Responder mensaje..." : "Escribe un mensaje..."}
-                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                onChange={handleMessageChange}
+                onKeyDown={handleKeyDown}
+                onKeyPress={(e) => e.key === 'Enter' && !showCommands && handleMessage(newMessage)}
+                placeholder="Escribe un mensaje..."
               />
-              <button onClick={sendMessage}>Enviar</button>
+              <SendButton onClick={() => handleMessage(newMessage)}>
+                Enviar
+              </SendButton>
             </MessageInput>
           </ChatArea>
         </ChatLayout>

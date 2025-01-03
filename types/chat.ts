@@ -13,6 +13,8 @@ export interface ChatGroup {
   name: string
   description?: string
   created_at: string
+  is_private: boolean
+  invite_code?: string
 }
 
 export interface UserProfile {

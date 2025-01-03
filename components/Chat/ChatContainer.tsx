@@ -21,6 +21,7 @@ const ChatLayout = styled.div`
   right: 0;
   bottom: 0;
   overflow: hidden;
+  overscroll-behavior: contain;
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -99,16 +100,15 @@ const MessageList = styled.div<{ $hasReply?: boolean }>`
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   height: calc(100dvh - 70px);
+  padding-bottom: calc(70px + ${props => props.$hasReply ? '40px' : '0px'});
   
   @media (max-width: 768px) {
-    padding: 1rem;
-    padding-bottom: calc(70px + ${props => props.$hasReply ? '40px' : '0px'});
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    height: 100%;
+    bottom: 70px;
+    height: auto;
     z-index: 1;
   }
 
@@ -159,41 +159,16 @@ const MessageInput = styled.div`
   display: flex;
   gap: 0.5rem;
   align-items: center;
-  position: relative;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  min-height: 70px;
+  z-index: 10;
+  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.2);
   
   @media (max-width: 768px) {
     padding: 0.8rem;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #242424;
-    z-index: 10;
-    min-height: 70px;
-    box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.2);
-  }
-  
-  .reply-preview {
-    position: absolute;
-    top: -40px;
-    left: 0;
-    right: 0;
-    background: #1a1a1a;
-    padding: 8px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid #2d2d2d;
-    font-size: 0.9rem;
-    color: #888;
-    z-index: 11;
-
-    @media (max-width: 768px) {
-      position: fixed;
-      bottom: 70px;
-      top: auto;
-      box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
-    }
   }
 
   input {
@@ -205,6 +180,8 @@ const MessageInput = styled.div`
     font-size: 0.95rem;
     transition: all 0.2s ease;
     color: #e0e0e0;
+    min-height: 42px;
+    max-height: 42px;
     
     &:focus {
       outline: none;
@@ -218,30 +195,6 @@ const MessageInput = styled.div`
     
     @media (max-width: 768px) {
       font-size: 16px;
-    }
-  }
-  
-  button {
-    padding: 0.7rem;
-    background: #4a4a4a;
-    color: #e0e0e0;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-    
-    &:hover {
-      transform: scale(1.05);
-      background: #555555;
-    }
-
-    &:active {
-      transform: scale(0.95);
     }
   }
 `
@@ -870,6 +823,8 @@ const CommandSuggestions = styled.div<{ $show: boolean }>`
   transition: all 0.2s ease;
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.2);
   z-index: 100;
+  max-height: calc(100dvh - 200px);
+  overflow-y: auto;
 `
 
 const CommandItem = styled.div<{ $isSelected: boolean }>`

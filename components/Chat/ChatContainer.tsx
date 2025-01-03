@@ -163,7 +163,7 @@ const MessageInput = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
-  min-height: 70px;
+  height: 70px;
   z-index: 10;
   box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.2);
   
@@ -173,15 +173,15 @@ const MessageInput = styled.div`
 
   input {
     flex: 1;
-    padding: 0.7rem 1rem;
+    height: 42px;
+    padding: 0 1rem;
     border: none;
     background: #333333;
     border-radius: 20px;
     font-size: 0.95rem;
     transition: all 0.2s ease;
     color: #e0e0e0;
-    min-height: 42px;
-    max-height: 42px;
+    line-height: 42px;
     
     &:focus {
       outline: none;
@@ -509,18 +509,19 @@ const ReplyPreview = styled.div`
 `
 
 const SendButton = styled.button`
-  padding: 0.7rem;
+  min-width: 42px;
+  height: 42px;
+  padding: 0;
   background: #4a4a4a;
   color: #e0e0e0;
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  flex-shrink: 0;
   
   &:hover {
     transform: scale(1.05);
@@ -825,7 +826,7 @@ const CommandSuggestions = styled.div<{ $show: boolean }>`
   z-index: 100;
   max-height: calc(100dvh - 200px);
   overflow-y: auto;
-`
+` as React.ComponentType<{ $show: boolean; children?: React.ReactNode }>;
 
 const CommandItem = styled.div<{ $isSelected: boolean }>`
   padding: 0.8rem 1rem;
@@ -873,7 +874,7 @@ const JoinIcon = () => (
 const HelpIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M9 9C9 7.89543 9.89543 7 11 7H12C13.1046 7 14 7.89543 14 9C14 10.1046 13.1046 11 12 11H12V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M9 9C9 7.89543 9.89543 7 11 7H12C13.1046 7 14 7.89543 14 9C14 10.1046 13.1046 11 12 11H12V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     <circle cx="12" cy="17" r="1" fill="currentColor"/>
   </svg>
 );
@@ -1328,15 +1329,17 @@ export default function ChatContainer() {
     switch (e.key) {
       case 'ArrowUp':
         e.preventDefault();
-        setSelectedCommandIndex(prev => 
-          prev > 0 ? prev - 1 : filteredCommands.length - 1
-        );
+        setSelectedCommandIndex(prev => {
+          const newIndex = prev > 0 ? prev - 1 : filteredCommands.length - 1;
+          return newIndex;
+        });
         break;
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedCommandIndex(prev => 
-          prev < filteredCommands.length - 1 ? prev + 1 : 0
-        );
+        setSelectedCommandIndex(prev => {
+          const newIndex = prev < filteredCommands.length - 1 ? prev + 1 : 0;
+          return newIndex;
+        });
         break;
       case 'Tab':
         e.preventDefault();
@@ -1364,12 +1367,13 @@ export default function ChatContainer() {
 
     if (value.startsWith('/')) {
       const search = value.slice(1).toLowerCase();
-      setFilteredCommands(
-        commands.filter(cmd => 
-          cmd.name.toLowerCase().includes(search) || 
-          cmd.description.toLowerCase().includes(search)
-        )
+      
+      const filtered = commands.filter(cmd => 
+        cmd.name.toLowerCase().includes(search) || 
+        cmd.description.toLowerCase().includes(search)
       );
+      
+      setFilteredCommands(filtered);
       setShowCommands(true);
       setSelectedCommandIndex(0);
     } else {
@@ -1543,7 +1547,11 @@ export default function ChatContainer() {
                 value={newMessage}
                 onChange={handleMessageChange}
                 onKeyDown={handleKeyDown}
-                onKeyPress={(e) => e.key === 'Enter' && !showCommands && handleMessage(newMessage)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && !showCommands) {
+                    handleMessage(newMessage);
+                  }
+                }}
                 placeholder="Escribe un mensaje..."
               />
               <SendButton onClick={() => handleMessage(newMessage)}>
